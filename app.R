@@ -1,50 +1,74 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
+# --------------------------------------------------------------
 library(shiny)
+library(shinydashboard)
+library(ggplot2)
+library(lubridate)
+library(DT)
+library(jpeg)
+library(grid)
+library(leaflet)
+library(scales)
+library(tidyverse)
 
-# Define UI for application that draws a histogram
-ui <- fluidPage(
+# --------------------------------------------------------------
+# Run once when app is launched
+# --------------------------------------------------------------
 
-    # Application title
-    titlePanel("Shoaib's Project 1"),
+# read in data-file
+halstedData <- read.table(file="./halsted.tsv", sep="\t", header=TRUE)
 
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            # sliderInput("bins",
-            #             "Number of bins:",
-            #             min = 1,
-            #             max = 50,
-            #             value = 30)
-          "heh sideee"
-        ),
+# convert the dates to internal format and remove the original dates
+# newDates <- as.Date(evl2006$Date, "%m/%d/%Y")
+# evl2006$newDate<-newDates
+# evl2006$Date <- NULL
+nDate <- as.Date(halstedData$date, "%m/%d/%Y")
+halstedData$nDate<-nDate
+halstedData$date<-NULL
 
-        # Show a plot of the generated distribution
-        mainPanel(
-           # plotOutput("distPlot")
-          "main boo"
-        )
+# look at the data loaded
+# View(halstedData)
+
+
+# Define UI for application
+ui <- dashboardPage(
+  dashboardHeader(title="Shoaib's Project 1"),
+  dashboardSidebar(disable=FALSE, collapsed=FALSE,
+                   sidebarMenu(
+                     menuItem("Tab 1", tabName = "cheapBlankSpace", icon = NULL),
+                     menuItem("Tab 2", tabName = "cheapBlankSpace", icon = NULL),
+                     menuItem("Tab 3", tabName = "cheapBlankSpace", icon = NULL)
+                     )
+                   ),
+  dashboardBody(
+    fluidRow(
+      # "row"
+      box( title = "Halsted Entries", solidHeader=TRUE, status="success", width=12, background="purple",
+           plotOutput("newPlot", height=250)
+      )
     )
+  ),
+ skin = "green"
 )
 
-# Define server logic required to draw a histogram
+# --------------------------------------------------------------
+# Run once each time user visits app
+# --------------------------------------------------------------
+# Define server logic
 server <- function(input, output) {
 
-    # output$distPlot <- renderPlot({
-    #     # generate bins based on input$bins from ui.R
-    #     x    <- faithful[, 2]
-    #     bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    # 
-    #     # draw the histogram with the specified number of bins
-    #     hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    # })
+  # output$map renderPlot({
+  #   # ----------------------------------------------------------
+  #   # Run each time widget changes that output$map depends on
+  #   # ----------------------------------------------------------
+  # })
+  output$newPlot <- renderPlot({
+    # ggplot(noons, aes(x=newDate, y=S2)) + geom_point(color="blue") +  labs(title="Room Temperature in room ???", x="Day", y = "Degrees F") + geom_line()
+    ggplot(halstedData, aes(x=year(nDate), y=rides))+
+      labs(x="Years", y="Amount of Entries", title="Entries over the Years")+
+      geom_bar(stat="identity", fill="palegreen")+
+      theme_dark()
+  })
+  
 }
 
 # Run the application 
