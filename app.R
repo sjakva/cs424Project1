@@ -9,7 +9,6 @@ library(grid)
 library(leaflet)
 library(scales)
 library(tidyverse)
-
 # --------------------------------------------------------------
 # Run once when app is launched
 # --------------------------------------------------------------
@@ -40,9 +39,10 @@ ui <- dashboardPage(
                      )
                    ),
   dashboardBody(
+    selectInput("stationInput", "Choose a station", c("UIC-Halsted", "[station]", "[station]")),
     fluidRow(
       # "row"
-      box( title = "Halsted Entries", solidHeader=TRUE, status="success", width=12, background="purple",
+      box( title = "Station Entries Per Year", solidHeader=TRUE, status="success", width=12, background="purple",
            plotOutput("newPlot", height=250)
       )
     )
